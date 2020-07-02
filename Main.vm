@@ -1,0 +1,20 @@
+function Main.main 0
+call Settings.init 0
+pop temp 0
+push constant 20
+push constant 20
+push constant 8
+push constant 4
+call Snake.new 4
+pop static 1
+push static 1
+call GameManager.new 1
+pop static 0
+push static 0
+call GameManager.run 1
+pop temp 0
+push static 0
+call GameManager.dispose 1
+pop temp 0
+push constant 0
+return

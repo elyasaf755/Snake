@@ -1,0 +1,94 @@
+function SnakeBody.new 0
+push constant 6
+call Memory.alloc 1
+pop pointer 0
+push constant 1
+neg
+pop this 0
+push argument 0
+pop this 1
+push argument 1
+pop this 2
+push argument 2
+pop this 3
+push argument 3
+pop this 4
+push argument 4
+pop this 5
+push pointer 0
+return
+function SnakeBody.getHeadX 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function SnakeBody.getHeadY 0
+push argument 0
+pop pointer 0
+push this 2
+return
+function SnakeBody.getTailX 0
+push argument 0
+pop pointer 0
+push this 3
+return
+function SnakeBody.getTailY 0
+push argument 0
+pop pointer 0
+push this 4
+return
+function SnakeBody.getAbsTailX 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 1
+neg
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 1
+return
+label IF_FALSE0
+push pointer 0
+call SnakeBody.getAbsTailX 1
+return
+function SnakeBody.getAbsTailY 0
+push argument 0
+pop pointer 0
+push this 4
+push constant 1
+neg
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 2
+return
+label IF_FALSE0
+push pointer 0
+call SnakeBody.getAbsTailY 1
+return
+function SnakeBody.clearAbsTail 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 1
+neg
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 1
+push this 2
+call Settings.squareSize 0
+call Util.clearSquare 3
+pop temp 0
+push constant 0
+return
+label IF_FALSE0
+push pointer 0
+call SnakeBody.clearAbsTail 1
+pop temp 0
+push constant 0
+return

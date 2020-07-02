@@ -1,0 +1,35 @@
+class Util {
+
+    // Meth Operations 
+
+    function int mod(int numinator, int denominator) {
+        if (numinator < denominator){
+            return numinator;
+        }
+
+        return Util.mod(numinator - denominator, denominator);
+    }
+
+
+    // Screen Operations
+
+    function void drawSquare(int x, int y, int squareSize){
+
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x * squareSize, 
+                                y * squareSize, 
+                                (x * squareSize) + squareSize, 
+                                (y * squareSize) + squareSize);
+        return;
+    }
+    
+    function void clearSquare(int x, int y, int squareSize){
+        
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x * squareSize, 
+                                y * squareSize, 
+                                (x * squareSize) + squareSize, 
+                                (y * squareSize) + squareSize);
+        return;
+    }
+}

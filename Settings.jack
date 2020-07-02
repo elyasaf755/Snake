@@ -1,0 +1,61 @@
+class Settings {
+
+    static int _squareSize; 
+
+    // Apply Settings
+    function void init(){
+        let _squareSize = 8;
+
+        return;
+    }
+
+    
+    // Game Settings
+
+    function int squareSize(){
+        return _squareSize;
+    }
+
+    function void setSquareSize(int squareSize){
+        let _squareSize = squareSize;
+
+        return;
+    }
+
+
+    // Environment Settings
+
+    function int left(){
+        return 130;
+    }
+    function int up(){
+        return 131;
+    }
+    function int right(){
+        return 132;
+    }
+    function int down(){
+        return 133;
+    }
+
+    function int minScreenX(){
+        return 0;
+    }
+    function int minScreenY(){
+        return 0;
+    }
+    function int maxScreenX(){
+        return (512 / _squareSize) - 2;
+    }
+    function int maxScreenY(){
+        return (256 / _squareSize) - 2 - Settings.statusBarHeight();
+    }
+
+    function int statusBarHeight(){
+        return 1;
+    }
+
+    function boolean isDebug(){
+        return false;
+    }
+}

@@ -1,0 +1,53 @@
+function Settings.init 0
+push constant 8
+pop static 0
+push constant 0
+return
+function Settings.squareSize 0
+push static 0
+return
+function Settings.setSquareSize 0
+push argument 0
+pop static 0
+push constant 0
+return
+function Settings.left 0
+push constant 130
+return
+function Settings.up 0
+push constant 131
+return
+function Settings.right 0
+push constant 132
+return
+function Settings.down 0
+push constant 133
+return
+function Settings.minScreenX 0
+push constant 0
+return
+function Settings.minScreenY 0
+push constant 0
+return
+function Settings.maxScreenX 0
+push constant 512
+push static 0
+call Math.divide 2
+push constant 2
+sub
+return
+function Settings.maxScreenY 0
+push constant 256
+push static 0
+call Math.divide 2
+push constant 2
+sub
+call Settings.statusBarHeight 0
+sub
+return
+function Settings.statusBarHeight 0
+push constant 1
+return
+function Settings.isDebug 0
+push constant 0
+return

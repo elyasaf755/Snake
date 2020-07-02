@@ -1,0 +1,501 @@
+class Snake {
+
+    /* Fields */
+    field SnakeBody _body;
+
+    // Snake's head position
+    field int _headX, _headY;
+
+    // Snake's tail position
+    field int _tailX, _tailY;
+
+    // Snake's movement hitory
+    field int _lastHeadX, _lastHeadY;
+    field int _lastTailX, _lastTailY;
+
+    // Snake's properties
+    field int _squareSize; 
+    field int _length; // snake's length = number of squares.
+    field int _moveSpeed;
+
+    // Other properties
+    field int _headDirection;
+    field int _tailDirection;
+    field int _lastHeadDirection; // 130 = Left, 131 = Up, 132 = Down, 133 = Right
+    field int _lastTailDirection;
+    field boolean _eatFlag;
+
+
+    /* Constructors */
+
+    // Main Constructor
+    constructor Snake new(int headX, int headY, int squareSize, int moveSpeed){
+
+        // Initialize Fields
+        
+        let _headX = headX;
+        let _headY = headY;
+
+        let _tailX = headX - 1;
+        let _tailY = headY;
+        
+        let _squareSize = squareSize;
+        let _length = 2;
+        let _moveSpeed = moveSpeed;
+
+        let _headDirection = Settings.right();
+        let _lastHeadDirection = _headDirection;
+        let _tailDirection = _headDirection;
+        let _eatFlag = false;
+
+        let _body = SnakeBody.new(_tailX, _tailY, -1, -1, _tailDirection);
+
+        return this;
+    }
+
+
+
+    /* Methods */
+
+    method void dispose() {
+        
+        do Memory.deAlloc(this);
+
+        return;
+    }
+    
+    // Getters
+    
+    method int getSquareSize(){
+        return _squareSize;
+    }
+
+    method int getLength(){
+        return _length;
+    }
+
+    method int getMoveSpeed(){
+        return _moveSpeed;
+    }
+
+    method int getHeadDirection(){
+        return _headDirection;
+    }
+
+    method int getHeadX(){
+        return _headX;
+    }
+
+    method int getHeadY(){
+        return _headY;
+    }
+
+    method int getTailX(){
+        return _tailX;
+    }
+
+    method int getTailY(){
+        return _tailY;
+    }
+
+    method int getLastTailX(){
+        return _lastTailX;
+    }
+
+    method int getLastTailY(){
+        return _lastTailY;
+    }
+
+    method boolean getEatFlag(){
+        return _eatFlag;
+    }
+
+    method int getAbsTailX(){
+        return _body.getAbsTailX();
+    }
+
+    method int getAbsTailY(){
+        return _body.getAbsTailY();
+    }
+
+
+    // Setters
+
+    method void setSquareSize(int squareSize){
+        let _squareSize = squareSize;
+
+        return;
+    }
+
+    method void setMoveSpeed(int moveSpeed){
+        let _moveSpeed = moveSpeed;
+
+        return;
+    }
+
+    method void setHeadDirection(int headDirection){
+        let _headDirection = headDirection;
+
+        return;
+    }
+
+    method void setTailDirection(int tailDirection){
+        let _tailDirection = tailDirection;
+
+        return;
+    }
+
+    method void setHead(int headX, int headY){
+        let _headX = headX;
+        let _headY = headY;
+
+        return;
+    }
+
+    method void setHeadX(int headX){
+        let _headX = headX;
+
+        return;
+    }
+
+    method void setHeadY(int headY){
+        let _headY = headY;
+
+        return;
+    }
+
+    method void setTail(int tailX, int tailY){
+        let _tailX = tailX;
+        let _tailY = tailY;
+
+        return;
+    }
+
+    method void setTailX(int tailX){
+        let _tailX = tailX;
+
+        return;
+    }
+
+    method void setTailY(int tailY){
+        let _tailY = tailY;
+
+        return;
+    }
+
+
+    // Actions
+
+    method void eat(){
+        let _length = _length + 1;
+        let _eatFlag = true;
+
+
+        return;
+    }
+
+    method void move(int direction){
+  
+        //do _body.clearAbsTail();
+        do clearTail();
+        
+        if (direction = Settings.left()){
+            do moveLeft();
+        }
+        if (direction = Settings.up()){
+            do moveUp();
+        }
+        if (direction = Settings.right()){
+            do moveRight();
+        }
+        if (direction = Settings.down()){
+            do moveDown();
+        }
+
+        let _eatFlag = false;
+
+        do draw();
+        do updateDirections(direction);
+
+    
+
+        return;
+    }
+
+
+    // Checks
+
+    // 1 = True, 0 - Invalid Direction, -1 - Hit Wall
+    method int canMove(int direction){
+
+        if (direction = Settings.left()){
+            if (~(_lastHeadDirection = Settings.right())){
+                if (_headX > Settings.minScreenX()){
+
+                    return 1;
+                }
+
+                return -1;
+            }
+        }
+        if (direction = Settings.up()){
+            if (~(_lastHeadDirection = Settings.down())){
+                if (_headY > Settings.minScreenY()){
+                    
+                    return 1;
+                }
+
+                return -1;
+            }
+        }
+        if (direction = Settings.right()){
+            if (~(_lastHeadDirection = Settings.left())){
+                if (_headX < Settings.maxScreenX()){
+                    
+                    return 1;
+                }
+
+                return -1;
+            }
+        }
+        if (direction = Settings.down()){
+            if (~(_lastHeadDirection = Settings.up())){
+                if (_headY < Settings.maxScreenY()){
+                    
+                    return 1;
+                }
+
+                return -1;
+            }
+        }
+
+        return 0;
+    }
+
+
+    // Screen
+
+    method void draw(){
+
+        do drawHead();
+        do drawTail();
+
+        return;
+    }
+
+    method void clearHeadTail(){
+
+        do clearHead();
+        do clearTail();
+
+        return;
+    }
+    
+
+
+    // Helper Methods
+
+    // Screen 
+
+    method void drawHead(){
+        do Util.drawSquare(_headX, _headY, _squareSize);
+
+        return;
+    }
+
+    method void drawTail(){
+        do Util.drawSquare(_tailX, _tailY, _squareSize);
+
+        return;
+    }
+
+    method void clearHead(){
+        do Util.clearSquare(_headX, _headY, _squareSize);
+
+        return;
+    }
+
+    method void clearTail(){
+        do Util.clearSquare(_tailX, _tailY, _squareSize);
+
+        return;
+    }
+
+
+    // Movement
+
+    method void moveLeft(){
+
+        do moveHeadLeft();
+
+        if (_lastHeadDirection = Settings.left()){
+            do moveTailLeft();
+        }
+        if (_lastHeadDirection = Settings.up()){
+            do moveTailUp();
+        }
+        if (_lastHeadDirection = Settings.down()){
+            do moveTailDown();
+        }
+
+        return;
+    }
+
+    method void moveUp(){
+
+        do moveHeadUp();
+        
+        if (_lastHeadDirection = Settings.left()){
+            do moveTailLeft();
+        }
+        if (_lastHeadDirection = Settings.up()){
+            do moveTailUp();
+        }
+        if (_lastHeadDirection = Settings.right()){
+            do moveTailRight();
+        }
+
+        return;
+    }
+
+    method void moveRight(){
+
+        do moveHeadRight();
+
+        if (_lastHeadDirection = Settings.right()){
+            do moveTailRight();
+        }
+        if (_lastHeadDirection = Settings.up()){
+            do moveTailUp();
+        }
+        if (_lastHeadDirection = Settings.down()){
+            do moveTailDown();
+        }
+
+        return;
+    }
+
+    method void moveDown(){
+
+        do moveHeadDown();
+
+        if (_lastHeadDirection = Settings.left()){
+            do moveTailLeft();
+        }
+        if (_lastHeadDirection = Settings.right()){
+            do moveTailRight();
+        }
+        if (_lastHeadDirection = Settings.down()){
+            do moveTailDown();
+        }
+
+        return;
+    }
+
+    
+    // Head's Movement
+
+    method void moveHeadLeft(){
+        let _headX = _headX - 1;
+
+        let _headDirection = Settings.left();
+
+        return;
+    }
+
+    method void moveHeadUp(){
+        let _headY = _headY - 1;
+
+        let _headDirection = Settings.up();
+
+        return;
+    }
+
+    method void moveHeadRight(){
+        let _headX = _headX + 1;
+
+        let _headDirection = Settings.right();
+
+        return;
+    }
+
+    method void moveHeadDown(){
+        let _headY = _headY + 1;
+
+        let _headDirection = Settings.down();
+
+        return;
+    }
+
+
+    // Tail's Movement
+
+    method void moveTailLeft(){
+
+        let _tailX = _tailX - 1;
+
+        let _tailDirection = Settings.left();
+
+        return;
+    }
+
+    method void moveTailUp(){
+
+        let _tailY = _tailY - 1;
+
+        let _tailDirection = Settings.up();
+
+        return;
+    }
+
+    method void moveTailRight(){
+        
+        let _tailX = _tailX + 1;
+
+        let _tailDirection = Settings.right();
+
+        return;
+    }
+
+    method void moveTailDown(){
+        
+        let _tailY = _tailY + 1;
+
+        let _tailDirection = Settings.down();
+
+        return;
+    }
+
+
+
+    method void saveTail(){
+        let _lastTailX = _tailX;
+        let _lastTailY = _tailY;
+        let _lastTailDirection = _tailDirection;
+
+        return;
+    }
+
+    method void restoreTail(){
+        let _tailX = _lastTailX;
+        let _tailY = _lastTailY;
+        let _tailDirection = _lastTailDirection;
+
+        return;
+    }
+
+
+    // Snake's Direction
+    
+    method void updateDirections(int newDirection){
+
+        let _lastHeadDirection = _headDirection;
+
+        let _headDirection = _lastHeadDirection;
+        if (~(newDirection = 0)){
+            let _headDirection = newDirection;
+        }
+
+        return;
+    }
+}

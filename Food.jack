@@ -1,0 +1,46 @@
+class Food {
+    field int _x, _y;
+    field int _foodSize;
+
+    constructor Food new(int x, int y, int foodSize){
+        let _x = x;
+        let _y = y;
+        let _foodSize = foodSize;
+
+        return this;
+    }
+
+    method void dispose() {
+        
+        do Memory.deAlloc(this);
+
+        return;
+    }
+
+    method void setPosition(int x, int y){
+        let _x = x;
+        let _y = y;
+
+        return;
+    }
+
+    method int getX(){
+        return _x;
+    }
+
+    method int getY(){
+        return _y;
+    }
+
+    method void draw(){
+        do Util.drawSquare(_x, _y, _foodSize);
+
+        return;
+    }
+    
+    method void clear(){
+        do Util.clearSquare(_x, _y, _foodSize);
+        
+        return;
+    }
+}

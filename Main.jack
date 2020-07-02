@@ -1,0 +1,25 @@
+// Snake new(int x, int y, int squareHeight, int moveSpeed)
+// Food new(int x, int y, int foodSize){
+// GameManager new(Snake snake)
+
+class Main {
+    static GameManager gameManager;
+    static Snake snake;
+
+    function void main () {
+
+        do Settings.init();
+
+        // headX, headY, squareSize, moveSpeed
+        let snake = Snake.new(20, 20, 8, 4);
+
+        let gameManager = GameManager.new(snake);
+
+        do gameManager.run();
+        do gameManager.dispose();
+        
+        return;
+    }
+
+    
+}

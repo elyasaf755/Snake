@@ -1,0 +1,68 @@
+class SnakeBody {
+    
+    field SnakeBody _body;
+
+    field int _headX;
+    field int _headY;
+    field int _tailX;
+    field int _tailY;
+    field int _headDirection;
+
+    constructor SnakeBody new(int headX, int headY, int tailX, int tailY, int headDirection) {
+
+        let _body = -1;
+
+        let _headX = headX;
+        let _headY = headY;
+        let _tailX = tailX;
+        let _tailY = tailY;
+        let _headDirection = headDirection;
+
+        return this;
+    }
+
+    method int getHeadX(){
+        return _headX;
+    }
+
+    method int getHeadY(){
+        return _headY;
+    }
+
+    method int getTailX(){
+        return _tailX;
+    }
+
+    method int getTailY(){
+        return _tailY;
+    }
+
+    method int getAbsTailX(){
+        if (_tailX = -1){
+            return _headX;
+        }
+
+        return getAbsTailX();
+    }
+
+    method int getAbsTailY(){
+        if (_tailY = -1){
+            return _headY;
+        }
+
+        return getAbsTailY();
+    }
+
+    method void clearAbsTail(){
+        if (_tailX = -1){
+            do Util.clearSquare(_headX, _headY, Settings.squareSize());
+
+            return;
+        }
+
+        do clearAbsTail();
+
+        return;
+    }
+
+}

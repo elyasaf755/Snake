@@ -1,0 +1,324 @@
+// Snake new(int x, int y, int squareHeight, int moveSpeed)
+// Food new(int x, int y, int foodSize){
+
+class GameManager {
+    /* Fields */
+
+    // Game elements
+    field Snake _snake;
+    field Food _food;
+    field int _squareSize;
+    
+    // Approximatly keeping track of time elapsed
+    field int _time;
+    field int _delayTime;
+    field int _sec;
+    field int _min;
+    field int _hour;
+
+    // Other Properties
+    field int _statusBarHeight;
+
+    
+    /* Constructor */
+
+    constructor GameManager new(Snake snake){
+        let _snake = snake;
+        let _squareSize = _snake.getSquareSize();
+        let _food = Food.new(Settings.maxScreenX() / 2, Settings.maxScreenY() / 2, _squareSize);
+
+        let _time = 0;
+        let _delayTime = 1000 / (_snake.getMoveSpeed() * 5);
+        let _sec = 0;
+        let _min = 0;
+        let _hour = 0;
+
+        let _statusBarHeight = 16;
+
+        return this;
+    }
+
+
+    /* Methods */
+
+    method void dispose() {
+
+        do _snake.dispose();
+        do _food.dispose();
+
+        do Memory.deAlloc(this);
+
+        return;
+    }
+
+    // Actions
+
+    method void run(){
+        var boolean exit;
+        var int key;
+        
+        let exit = false;
+        let key = 0;
+
+        if (~Settings.isDebug()){
+            do welcome();
+        }
+
+        do Screen.clearScreen();
+
+        do _snake.draw();
+        do _food.draw();
+        
+
+        while(~exit){
+            let key = Keyboard.keyPressed();
+
+            do _food.draw();
+            
+            if (~(key = 0)){
+                if (_snake.canMove(key) = 1){
+                    do _snake.move(key);
+                }
+                if (_snake.canMove(key) = 0){
+                    do _snake.move(_snake.getHeadDirection());
+                }
+                if (_snake.canMove(key) = -1){
+                    do gameOver();
+
+                    return;
+                }
+            }
+            if (~Settings.isDebug()){
+                if (key = 0){
+                    if (_snake.canMove(_snake.getHeadDirection()) = 1){
+                        do _snake.move(_snake.getHeadDirection());
+                    }
+                    if (_snake.canMove(_snake.getHeadDirection()) = -1){
+                        do gameOver();
+    
+                        return;
+                    }
+                }
+            }
+    
+            if (isCollidedWithFood()){
+                do _snake.eat();
+                do spawnFood();
+            }
+
+            if (~Settings.isDebug()){
+                do drawStatusBar();
+            }
+            if (Settings.isDebug()){
+                do drawDebugStatusBar();
+            }
+
+            do Sys.wait(_delayTime);
+
+            do updateTime();
+        }
+        
+        return;
+    }
+
+    method void spawnFood(){
+        var int x, y;
+
+        do Random.setSeed(_time);
+
+        let x = Random.randRange(Settings.maxScreenX());
+        let y = Random.randRange(Settings.maxScreenY());
+
+        do _food.setPosition(x, y);
+        do _food.draw();
+
+        return;
+    }
+    
+    method void clearFood(){
+        do _food.clear();
+
+        return;
+    }
+
+    method void drawStatusBar(){
+
+        var String tString;
+
+        // Horizontal line dividing the game's area from the status bar
+        do Screen.setColor(true);
+        do Screen.drawLine(0, 256 - (_statusBarHeight - 1), 512 - 1, 256 - (_statusBarHeight - 1));
+
+        // Game stats
+        do Output.moveCursor(22, 2);
+        let tString = "Elyasaf Elbaz";
+        do Output.printString(tString);
+        do tString.dispose();
+
+        do Output.moveCursor(22, 28);
+        let tString = "Score: ";
+        do Output.printString(tString);
+        do tString.dispose();
+        do Output.printInt(_snake.getLength());
+        
+        do Output.moveCursor(22, 50);
+        let tString = "Time: ";
+        do Output.printString(tString);
+        do tString.dispose();
+        do Output.printInt(_sec);
+
+        return;
+    }
+
+    method void drawDebugStatusBar(){
+
+        var String tString;
+
+        // Horizontal line dividing the game's area from the status bar
+        do Screen.setColor(true);
+        do Screen.drawLine(0, 256 - (_statusBarHeight - 1), 512 - 1, 256 - (_statusBarHeight - 1));
+
+        // Game stats
+        do Output.moveCursor(22, 1);
+        let tString = "Head: (";
+        do Output.printString(tString);
+        do Output.printInt(_snake.getAbsTailX());
+        do Output.printString(", ");
+        do Output.printInt(_snake.getAbsTailY());
+        do Output.printString(")");
+        do tString.dispose();
+
+        do Output.moveCursor(22, 1 + 14 + 1);
+        let tString = "Tail: (";
+        do Output.printString(tString);
+        do Output.printInt(_snake.getTailX());
+        do Output.printString(", ");
+        do Output.printInt(_snake.getTailY());
+        do Output.printString(")");
+        do tString.dispose();
+
+        do Output.moveCursor(22, 1 + 14 + 1 + 15 + 1);
+        let tString = "LT: (";
+        do Output.printString(tString);
+        do Output.printInt(_snake.getLastTailX());
+        do Output.printString(", ");
+        do Output.printInt(_snake.getLastTailY());
+        do Output.printString(")");
+        do tString.dispose();
+
+        // let tString = "Eat: ";
+        // do Output.printString(tString);
+        do Output.printString(" ");
+        if (_snake.getEatFlag()){
+            do Output.printString("True  ");
+        }
+        if (~_snake.getEatFlag()){
+            do Output.printString("False ");
+        }
+        do tString.dispose();
+
+        do Output.moveCursor(22, 1 + 14 + 1 + 15 + 1 + 10 + 1 + 6);
+        let tString = "Food: (";
+        do Output.printString(tString);
+        do Output.printInt(_food.getX());
+        do Output.printString(", ");
+        do Output.printInt(_food.getY());
+        do Output.printString(")");
+        do tString.dispose();
+        
+        // do Output.moveCursor(22, 50);
+        // let tString = "Time: ";
+        // do Output.printString(tString);
+        // do tString.dispose();
+        // do Output.printInt(_sec);
+
+        return;
+    }
+
+    method void welcome(){
+        var int input;
+        var String tString;
+
+        let tString = "Welcome!";
+        do Output.moveCursor(11, 31 - (tString.length() / 2));
+        do Output.printString(tString);
+        do tString.dispose();
+
+        do Sys.wait(600);
+
+        do Screen.clearScreen();
+
+        let input = Keyboard.keyPressed();
+
+        while (~(input = 128)){
+
+            do Sys.wait(400);
+            
+            let input = Keyboard.keyPressed();
+
+            do Output.moveCursor(11, 31 - (tString.length() / 2));
+            let tString = "Press and hold Enter to start";
+            do Output.printString(tString);
+            do tString.dispose();
+
+            do Sys.wait(400);
+
+            do Screen.clearScreen();
+        }
+
+        return;
+    }
+
+    method void gameOver(){
+        var String tString;
+
+        do clearFood();
+
+        do Output.moveCursor(11, 26);
+        let tString = "Game Over!!!";
+        do Output.printString(tString);
+        do tString.dispose();
+
+        return;
+    }
+
+    // Checks
+
+    // Checks if the snake's head collided with the food
+    method boolean isCollidedWithFood(){
+        if (_snake.getHeadX() = _food.getX()){
+            if (_snake.getHeadY() = _food.getY()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    // Clock
+
+    method void updateTime(){
+        let _time = _time + _delayTime;
+
+        if (_time < 0){
+            let _time = 0;
+        }
+
+        if (Util.mod(_time, 1000) = 0){
+            let _sec = _sec + 1;
+        }
+
+        if (Util.mod(_sec, 60) = 0){
+            let _sec = 0;
+            let _min = _min + 1;
+        }
+
+        if (Util.mod(_min, 60) = 0){
+            let _min = 0;
+            let _hour = _hour + 1;
+        }
+
+        return;
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "ego.power-tools": {
+        "buttons": 
+        [
+            {
+                "text": "Save & Compile",
+                "tooltip": "Saves all files & compile all the .jack files in the current folder.",
+                "action":
+                    {
+                        "type": "command",
+                        "command": "macros.compile_button_click"
+                    }
+            }
+        ],
+
+        "commands": {
+            "compile_folder": {
+                "script": "compile_folder.js"
+            }
+        }
+    },
+
+    "macros": {
+        "compile_button_click": [
+            "workbench.action.files.saveAll",
+            "compile_folder"
+          ]
+    }
+}
